@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "author": "Leandro Augusto (com DHT22)",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0 },
+
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -51.6,
+      "left": 282.2,
+      "attrs": { "color": "red" }
+    },
+
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 91.2,
+      "left": 277.85,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 54.2,
+      "left": 163.2,
+      "attrs": { "color": "green" }
+    },
+
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -140,
+      "left": 200,
+      "attrs": {}
+    }
+  ],
+
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "" ],
+    [ "esp:RX", "$serialMonitor:TX", "" ],
+    [ "esp:17", "r1:1", "red" ],
+    [ "r1:2", "led1:A", "red" ],
+    [ "led1:C", "esp:GND.2", "black" ],
+    [ "esp:22", "btn1:1.l", "green" ],
+    [ "btn1:2.l", "esp:GND.1", "black" ],
+    [ "esp:15", "dht1:SDA", "green" ],
+    [ "esp:3V3", "dht1:VCC", "red" ],
+    [ "esp:GND.1", "dht1:GND", "black" ]
+  ]
+}
