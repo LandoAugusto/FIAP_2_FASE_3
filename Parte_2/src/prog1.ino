@@ -142,7 +142,6 @@ void processTemperature() {
   lastTempTime = millis();
 }
 
-
 // ===================== SETUP =====================
 void setup() {
   Serial.begin(115200);
