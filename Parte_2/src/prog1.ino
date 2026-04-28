@@ -61,7 +61,6 @@ void setup_wifi() {
 void reconnect_mqtt() {
   while (!client.connected()) {
     Serial.print("Conectando MQTT...");
-
     if (client.connect(mqtt_client_id)) {
       Serial.println("OK!");
     } else {
@@ -127,29 +126,19 @@ void processTemperature() {
   if (millis() - lastTempTime < 10000) return;
 
   float temp = dht.readTemperature();
-  float hum  = dht.readHumidity();
-
-  if (isnan(temp) || isnan(hum)) {
+  if (isnan(temp)) {
     Serial.println("⚠️ Falha no DHT22");
     lastTempTime = millis();
     return;
   }
-
   Serial.print("🌡️ Temp: ");
   Serial.print(temp);
-  Serial.print(" °C | 💧 Umidade: ");
-  Serial.print(hum);
-  Serial.println(" %");
-
+  Serial.print(" °C ");
   StaticJsonDocument<128> doc;
   doc["temperatura"] = temp;
-  doc["umidade"] = hum;
-
   String payload;
   serializeJson(doc, payload);
-
   publishMQTT(mqtt_topic_temp, payload);
-
   lastTempTime = millis();
 }
 

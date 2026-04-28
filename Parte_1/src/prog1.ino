@@ -53,7 +53,6 @@ void setup_wifi() {
     delay(500);
     Serial.print(".");
   }
-
   Serial.println("\nWiFi conectado!");
 }
 
@@ -71,6 +70,8 @@ void reconnect_mqtt() {
   }
 }
 
+
+
 // ===== FILA =====
 void adicionarFila(const char* topico, String payload) {
   if (filaIndex < MAX_QUEUE) {
@@ -83,10 +84,8 @@ void adicionarFila(const char* topico, String payload) {
 }
 
 void enviarOuArmazenar(const char* topico, String payload) {
-
   if (client.connected()) {
     bool ok = client.publish(topico, payload.c_str());
-
     if (!ok) {
       Serial.println("❌ Falha, salvando na fila...");
       adicionarFila(topico, payload);
@@ -103,7 +102,6 @@ void processarFila() {
   for (int i = 0; i < filaIndex; i++) {
     client.publish(fila[i].topico.c_str(), fila[i].payload.c_str());
   }
-
   if (filaIndex > 0) {
     Serial.println("📤 Fila reenviada com sucesso");
   }
@@ -128,23 +126,19 @@ void setup() {
 
 // ===== LOOP =====
 void loop() {
-
   // 🔌 MQTT
   if (!client.connected()) {
     reconnect_mqtt();
   }
   client.loop();
-
   unsigned long now = millis();
-
   // ❤️ BATIMENTOS (botão)
   if (digitalRead(BUTTON_PIN) == LOW) {
     if (now - lastBeatTime > 300) {
       beatCount++;
       lastBeatTime = now;
     }
-  }
-
+  } 
   // ⏱️ Calcula BPM a cada 10s
   if (now - lastCalcTime >= 10000) {
     bpm = beatCount * 6;
@@ -180,10 +174,8 @@ void loop() {
 
     // Temperatura
     enviarOuArmazenar("esp32/saude/temperatura", String(temperatura));
-
     // BPM
     enviarOuArmazenar("esp32/saude/bpm", String(bpm));
-
     // Alerta
     if (temperatura > 38 || bpm > 120) {
       enviarOuArmazenar("esp32/saude/alerta", "CRITICO");
