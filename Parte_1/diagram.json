@@ -1,1 +1,35 @@
-{ "version": 1, "author": "Leandro Augusto", "editor": "wokwi", "parts": [ { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} }, { "type": "wokwi-dht22", "id": "dht1", "top": -143.7, "left": 340.2, "attrs": {} } ], "connections": [ [ "esp:TX", "$serialMonitor:RX", "", [] ], [ "esp:RX", "$serialMonitor:TX", "", [] ], [ "dht1:VCC", "esp:5V", "red", [ "v249.6", "h-134.4" ] ], [ "dht1:SDA", "esp:23", "gold", [ "v0" ] ], [ "dht1:GND", "esp:GND.2", "black", [ "v0" ] ] ], "dependencies": {} }
+{
+  "version": 1,
+  "author": "Leandro Augusto (sensores independentes)",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -105.6, "left": 43.24, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -265.8,
+      "left": 248.7,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "pir1",
+      "top": 116.92,
+      "left": -220.3,
+      "rotate": 270,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:3V3", "dht1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND", "dht1:GND", "black", [ "v0" ] ],
+    [ "esp:15", "dht1:SDA", "green", [ "v0" ] ],
+    [ "esp:3V3", "pir1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND", "pir1:GND", "black", [ "v0" ] ],
+    [ "esp:4", "pir1:OUT", "blue", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
