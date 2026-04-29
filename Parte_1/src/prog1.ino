@@ -1,14 +1,19 @@
 #include <DHT.h>
 #include <ArduinoJson.h>
-
 // ===================== PINOS =====================
+//  Sensores Utilizados
+//  DHT22: responsável pela leitura de temperatura e umidade (considerado um único sensor).
+//  PIR (Sensor de Movimento): utilizado para detectar presença no ambiente.
 #define DHTPIN 15
 #define DHTTYPE DHT22
 #define PIR_PIN 4
 
 DHT dht(DHTPIN, DHTTYPE);
-
 // ===================== CONTROLE =====================
+// Funcionamento do Sistema
+// As leituras são realizadas a cada 5 segundos.
+// Os dados são processados localmente no ESP32.
+// As informações são exibidas no Serial Monitor, simulando saída para sistemas externos.
 unsigned long lastRead = 0;
 const long interval = 5000;
 
@@ -21,7 +26,9 @@ String buffer[MAX_BUFFER];
 int bufferIndex = 0;
 
 // ===================== SALVAR LOCAL =====================
-void saveLocal(String payload) {
+ // As leituras são armazenadas no buffer local
+  // Armazena até 20 leituras
+void saveLocal(String payload) { 
   if (bufferIndex < MAX_BUFFER) {
     buffer[bufferIndex++] = payload;
     Serial.println("💾 Dados salvos localmente");
@@ -36,6 +43,9 @@ void saveLocal(String payload) {
 }
 
 // ===================== SINCRONIZAR =====================
+// Quando a conexão é restabelecida:
+// Todos os dados armazenados são exibidos no Serial Monitor
+// O buffer é limpo após a sincronização
 void syncData() {
   if (bufferIndex == 0) return;
 
@@ -64,15 +74,24 @@ void setup() {
 }
 
 // ===================== LOOP =====================
+//  Simulação de Conectividade
+//  O sistema utiliza uma variável booleana para simular o estado de conexão:
+//  Online:
+//    Os dados são exibidos no Serial Monitor como se fossem enviados para a nuvem
+//    Os dados armazenados são sincronizados
+//  Offline:
+//    Os dados continuam sendo coletados normalmente
+//    As leituras são armazenadas no buffer local
 void loop() {
 
-  // 🔥 alterna ONLINE/OFFLINE a cada 15s (simulação)
+  
+  // 🔥 Alterna ONLINE/OFFLINE a cada 15s (simulação)
   if (millis() % 30000 < 15000) {
     isOnline = true;
   } else {
     isOnline = false;
   }
-
+// As leituras são realizadas a cada 5 segundos.
   if (millis() - lastRead < interval) return;
   lastRead = millis();
 
@@ -94,6 +113,7 @@ void loop() {
   doc["umidade"] = hum;
   doc["movimento"] = (motion == HIGH);
 
+  // Estrutura em formato JSON
   String payload;
   serializeJson(doc, payload);
 
@@ -101,15 +121,20 @@ void loop() {
   Serial.println(payload);
 
   // ===================== REGRAS DE NEGÓCIO =====================
+  // Se a temperatura for maior que 38°C:
+  // O sistema gera alerta:
   if (temp > 38) {
     Serial.println("⚠️ ALERTA: FEBRE DETECTADA");
   }
 
+  // Quando o sensor PIR detecta presença:
   if (motion == HIGH) {
     Serial.println("⚠️ ALERTA: PRESENÇA DETECTADA");
   }
 
   // ===================== EDGE LOGIC =====================
+  // Os dados são exibidos no Serial Monitor como se fossem enviados para a nuvem
+  // Os dados armazenados são sincronizados
   if (isOnline) {
 
     Serial.println("🌐 ONLINE → enviando dados (Serial)");
@@ -120,8 +145,10 @@ void loop() {
     // 🔄 sincroniza dados antigos
     syncData();
 
-  } else {
-
+  } 
+  // Os dados continuam sendo coletados normalmente
+  // As leituras são armazenadas no buffer local
+  else {
     Serial.println("📴 OFFLINE → armazenando local");
     saveLocal(payload);
   }
